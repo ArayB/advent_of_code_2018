@@ -1,12 +1,6 @@
 defmodule Exercise1 do
   def frequency(input) do
-    Enum.reduce(
-      Enum.map(input, fn s ->
-        {a, _} = Integer.parse(s)
-        a
-      end),
-      fn x, acc -> x + acc end
-    )
+    Enum.reduce(input, 0, fn x, acc -> String.to_integer(x) + acc end)
   end
 end
 
@@ -20,7 +14,7 @@ defmodule Exercise2 do
   end
 
   defp find_freq([head | tail], original_input, frequencies, last_frequency) do
-    {change, _} = Integer.parse(head)
+    change = String.to_integer(head)
     new_freq = last_frequency + change
 
     if Enum.member?(frequencies, new_freq) do
