@@ -6,8 +6,9 @@ end
 
 defmodule Exercise2 do
   def duplicate_frequency(input) do
-    find_freq(input, input, [0], 0)
+    # find_freq(input, input, [0], 0)
     # find_freq(input, [0], 0)
+    find_freq(input, MapSet.new([0]), 0)
   end
 
   # Tried without passing the original list around and just adding tested transforms to the end of the list
@@ -23,24 +24,35 @@ defmodule Exercise2 do
   #   end
   # end
 
-  defp find_freq([], original_input, frequencies, last_frequency) do
-    find_freq(original_input, original_input, frequencies, last_frequency)
-  end
+  # Using MapSet is much much quicker
+  defp find_freq([head | tail], frequencies, last_frequency) do
+    new_freq = last_frequency + String.to_integer(head)
 
-  defp find_freq([head | tail], original_input, frequencies, last_frequency) do
-    change = String.to_integer(head)
-    new_freq = last_frequency + change
-
-    if Enum.member?(frequencies, new_freq) do
+    if new_freq in frequencies do
       new_freq
     else
-      # changing this line from concatenating list to prepending dropped execution time from 60s to 16s
-      # It doesn't matter what order the discovered frequencies are in so prepending is fine
-      # find_freq(tail, original_input, frequencies ++ [new_freq], new_freq)
-
-      find_freq(tail, original_input, [new_freq | frequencies], new_freq)
+      find_freq(tail ++ [head], MapSet.put(frequencies, new_freq), new_freq)
     end
   end
+
+  # defp find_freq([], original_input, frequencies, last_frequency) do
+  #   find_freq(original_input, original_input, frequencies, last_frequency)
+  # end
+  #
+  # defp find_freq([head | tail], original_input, frequencies, last_frequency) do
+  #   change = String.to_integer(head)
+  #   new_freq = last_frequency + change
+  #
+  #   if Enum.member?(frequencies, new_freq) do
+  #     new_freq
+  #   else
+  #     # changing this line from concatenating list to prepending dropped execution time from 60s to 16s
+  #     # It doesn't matter what order the discovered frequencies are in so prepending is fine
+  #     # find_freq(tail, original_input, frequencies ++ [new_freq], new_freq)
+  #
+  #     find_freq(tail, original_input, [new_freq | frequencies], new_freq)
+  #   end
+  # end
 end
 
 ExUnit.start()
@@ -75,7 +87,6 @@ defmodule Exercise2Test do
   end
 
   test "with input" do
-    # This takes about 15s to run
     assert File.read!("input_1.txt") |> String.split() |> duplicate_frequency == 137_041
   end
 end
